@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha lib/test/test.js --timeout 10000 --bail",
-    "build": "tslint -c tslint.json src/**/*.ts test/**/*.ts & tsc"
+    "build": "tslint -c tslint.json src/**/*.ts test/**/*.ts & tsc",
+    "prepublish": "npm build"
   },
   "repository": {
     "type": "git",
