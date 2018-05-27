@@ -19,13 +19,19 @@ export class DatastoreStore {
         }
     }
 
-    public async set (set: object, callback: (err: Error | null) => void): Promise<void> {
+    public async save (set: object, callback: (err: Error | null) => void): Promise<void> {
         try {
             const state = await this.getLastState();
 
             await this.db.save({
                 key: state ? state[KEY] : this.db.key([this.kind]),
-                data: set
+                // stringify -> parse - to exclude non serializable fields
+                data: JSON.parse(JSON.stringify({
+                    // @ts-ignore
+                    lastRun: set.lastRun,
+                    // @ts-ignore
+                    migrations: set.migrations
+                }))
             });
 
             callback(null);

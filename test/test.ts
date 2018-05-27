@@ -2,6 +2,8 @@ import Datastore = require("@google-cloud/datastore");
 import DatastoreStore from "../src";
 import { assert } from "chai";
 import { KEY } from "@google-cloud/datastore";
+import * as migrate from "migrate";
+import * as path from "path";
 
 const db = new Datastore({});
 
@@ -33,9 +35,10 @@ describe("Basic", function () {
     });
 
     it("Setting", function (done: MochaDone) {
-        this.store.set(
+        this.store.save(
             {
-                param: 1
+                lastRun: 1,
+                migrations: []
             },
             function (err) {
                 done(err);
@@ -55,12 +58,54 @@ describe("Basic", function () {
                 }
 
                 try {
-                    assert.deepEqual(data, { param: 1 });
+                    assert.deepEqual(data, { lastRun: 1, migrations: [] });
                     done();
                 } catch (err) {
                     done(err);
                 }
             }
         );
+    });
+});
+
+describe("Integration with migrate", function () {
+    after(cleanupMigrationKind);
+
+    it("Load and run up migration", function (done: MochaDone) {
+        migrate.load({
+            stateStore: new DatastoreStore(db, STORE_KIND),
+            migrationsDirectory: path.resolve("./test/migrations")
+        }, function (err, set) {
+            if (err) {
+                done(err);
+            }
+
+            set.up(setErr => {
+                if (setErr) {
+                    done(setErr);
+                }
+
+                done();
+            });
+        });
+    });
+
+    it("Load and run down migration", function (done: MochaDone) {
+        migrate.load({
+            stateStore: new DatastoreStore(db, STORE_KIND),
+            migrationsDirectory: path.resolve("./test/migrations")
+        }, function (err, set) {
+            if (err) {
+                done(err);
+            }
+
+            set.down(setErr => {
+                if (setErr) {
+                    done(setErr);
+                }
+
+                done();
+            });
+        });
     });
 });
