@@ -2,11 +2,11 @@
   "name": "migrate-datastore-store",
   "version": "1.0.0",
   "description": "Store implementation for Google Cloud Datastore for migrate library",
-  "main": "index.js",
+  "main": "./lib/src/index.js",
   "scripts": {
     "test": "mocha lib/test/test.js --timeout 10000 --bail",
     "build": "tslint -c tslint.json src/**/*.ts test/**/*.ts & tsc",
-    "prepublish": "npm build"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
