@@ -1,1 +1,0 @@
-{"version":3,"file":"1-migration.js","sourceRoot":"f:/Projects/migrate-datastore-store/","sources":["test/migrations/1-migration.ts"],"names":[],"mappings":";AAAA,MAAM,CAAC,OAAO,CAAC,EAAE,GAAG,UAAU,IAAI;IAC9B,IAAI,EAAE,CAAC;AACX,CAAC,CAAC;AAEF,MAAM,CAAC,OAAO,CAAC,IAAI,GAAG,UAAU,IAAI;IAChC,IAAI,EAAE,CAAC;AACX,CAAC,CAAC"}
