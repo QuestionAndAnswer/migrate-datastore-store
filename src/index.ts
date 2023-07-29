@@ -1,15 +1,14 @@
-import Datastore = require("@google-cloud/datastore");
-import { KEY } from "@google-cloud/datastore";
+import { Datastore } from "@google-cloud/datastore";
 
 export const DEFAULT_DATASTORE_STORE_KIND = "_MIGRATIONS_STATE_";
 
 export class DatastoreStore {
-    constructor (
+    constructor(
         private readonly db: Datastore,
         private readonly kind: string = DEFAULT_DATASTORE_STORE_KIND
-    ) {}
+    ) { }
 
-    public async load (callback: (err: Error | null, set: object | null) => void): Promise<void> {
+    public async load(callback: (err: Error | null, set: object | null) => void): Promise<void> {
         try {
             const state = await this.getLastState();
 
@@ -19,12 +18,12 @@ export class DatastoreStore {
         }
     }
 
-    public async save (set: object, callback: (err: Error | null) => void): Promise<void> {
+    public async save(set: object, callback: (err: Error | null) => void): Promise<void> {
         try {
             const state = await this.getLastState();
 
             await this.db.save({
-                key: state ? state[KEY] : this.db.key([this.kind]),
+                key: state ? state[Datastore.KEY] : this.db.key([this.kind]),
                 // stringify -> parse - to exclude non serializable fields
                 data: JSON.parse(JSON.stringify({
                     // @ts-ignore
@@ -40,9 +39,9 @@ export class DatastoreStore {
         }
     }
 
-    private async getLastState (): Promise<object | null> {
+    private async getLastState(): Promise<object | null> {
         const [[result]] = await this.db.createQuery(this.kind)
-                .run();
+            .run();
 
         return result;
     }

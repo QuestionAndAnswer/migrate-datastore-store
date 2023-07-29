@@ -1,28 +1,21 @@
-import Datastore = require("@google-cloud/datastore");
+import { Datastore } from "@google-cloud/datastore";
 import DatastoreStore from "../src";
 import { assert } from "chai";
-import { KEY } from "@google-cloud/datastore";
 import * as migrate from "migrate";
 import * as path from "path";
 
 const db = new Datastore({});
 
-declare module "mocha" {
-    interface ITestCallbackContext {
-        store: DatastoreStore;
-    }
-}
-
 const STORE_KIND = "_TEST_MIGRATIONS_KIND_";
 const CONSISTENCY_TIMEOUT = 4000;
 
-async function cleanupMigrationKind (): Promise<void> {
+async function cleanupMigrationKind(): Promise<void> {
     const [records] = await db.createQuery(STORE_KIND)
         .select("__key__")
         .run();
 
     if (records.length) {
-        await db.delete(records.map(r => r[KEY]));
+        await db.delete(records.map(r => r[Datastore.KEY]));
     }
 }
 
@@ -34,7 +27,7 @@ describe("Basic", function () {
         this.store = new DatastoreStore(db, STORE_KIND);
     });
 
-    it("Setting", function (done: MochaDone) {
+    it("Setting", function (done) {
         this.store.save(
             {
                 lastRun: 1,
@@ -46,11 +39,11 @@ describe("Basic", function () {
         );
     });
 
-    it("Wait datastore consistency for ", function (done: MochaDone) {
+    it("Wait datastore consistency for ", function (done) {
         setTimeout(done, CONSISTENCY_TIMEOUT);
     });
 
-    it("Loading", function (done: MochaDone) {
+    it("Loading", function (done) {
         this.store.load(
             function (err: Error, data: object) {
                 if (err) {
@@ -71,7 +64,7 @@ describe("Basic", function () {
 describe("Integration with migrate", function () {
     after(cleanupMigrationKind);
 
-    it("Load and run up migration", function (done: MochaDone) {
+    it("Load and run up migration", function (done) {
         migrate.load({
             stateStore: new DatastoreStore(db, STORE_KIND),
             migrationsDirectory: path.resolve("./test/migrations")
@@ -90,7 +83,7 @@ describe("Integration with migrate", function () {
         });
     });
 
-    it("Load and run down migration", function (done: MochaDone) {
+    it("Load and run down migration", function (done) {
         migrate.load({
             stateStore: new DatastoreStore(db, STORE_KIND),
             migrationsDirectory: path.resolve("./test/migrations")
